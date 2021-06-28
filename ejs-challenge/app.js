@@ -1,8 +1,10 @@
 //jshint esversion:6
-
 const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
+const mongoose = require("mongoose")
+
+mongoose.connect('mongodb://localhost:27017/blogDB', {useNewUrlParser: true, useUnifiedTopology: true});
 
 const app = express();
 
@@ -11,9 +13,24 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 
+//Database
+const postSchema = {
+  title: String,
+  content: String,
+  date: String
+}
 
+const Post = mongoose.model("post", postSchema);
+
+//Routing
 app.get('/', function(req, res){
-  res.render('home')
+  Post.find({}, function(err, posts){
+    if (err){
+      console.log(err)
+    } else{
+        res.render('home', {posts: posts})
+    }
+  })
 })
 
 app.get('/about', function (req, res){
@@ -29,9 +46,21 @@ app.get('/compose', function (req, res){
 })
 
 app.post('/', function (req, res){
-  var title = req.body.postTitle
-  var body = req.body.postContent
-  console.log(title + ', ' + body)
+  let postTitle = req.body.postTitle
+  let postContent= req.body.postContent
+  let postDate = new Date().toLocaleDateString();
+  const posts = new Post({
+    title: postTitle,
+    content: postContent,
+    date: postDate
+  })
+  posts.save(function (err){
+    if (err){
+      console.log(err)
+    } else {
+      res.redirect('/');
+    }
+  })
 })
 
 

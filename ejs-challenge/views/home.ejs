@@ -1,12 +1,11 @@
 <%-include('partials/header'); -%>
 
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title>Daily Journal</title>
-  </head>
-  <body>
-    <h1>Hello</h1>
+
+<% posts.forEach(post =>{ %>
+<h1><%=post.title%></h1>
+<h3><%=post.date%></h3>
+<p><%=post.content%></p>
+
+<%  }) %>
 
 <%-include('partials/footer'); -%>
